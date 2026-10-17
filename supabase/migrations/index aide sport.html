@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SportAide : choisis un muscle, trouve l’exercice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EEF1F4;--ink:#12151C;--mut:#5B6472;--line:#D3D9E1;--card:#fff;--body:#DCE1E9;--zone:#B4BFD0;--acc:#2338E6;--warn:#9A5B00;color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 "DM Sans",system-ui,sans-serif}
+h1,h2,h3,.logo{font-family:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;letter-spacing:-.02em;margin:0;line-height:1.05}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+select,input,button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:.5rem .75rem}
+button{cursor:pointer}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.demo{background:var(--ink);color:var(--paper);padding:.5rem 1rem;font-size:.9rem}
+header{display:flex;gap:.6rem;align-items:center;padding:.8rem 1rem;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{font-size:1.7rem;font-weight:700;margin-right:auto;text-decoration:none}
+main{max-width:1020px;margin:0 auto;padding:1rem}
+.hero{display:grid;gap:1.5rem;align-items:center;padding:1rem 0}
+@media(min-width:800px){.hero{grid-template-columns:1.1fr .9fr;padding:2.5rem 0}}
+.hero h1{font-size:clamp(2.3rem,5.6vw,4.2rem);font-weight:700}
+.sub{color:var(--mut);max-width:34ch;margin:1rem 0}
+.search{position:relative;max-width:420px}
+.search input{width:100%;padding:.85rem 1rem;font-size:1.05rem;border-width:2px;border-color:var(--ink)}
+#sug{position:absolute;left:0;right:0;top:100%;background:var(--card);border:1px solid var(--line);border-radius:6px;z-index:5;overflow:hidden}
+#sug button{display:block;width:100%;text-align:left;border:0;border-radius:0}
+#sug button:hover,#sug button:focus-visible{background:var(--paper)}
+.mapbox{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.tog{display:flex}
+.tog button{border-radius:0;border-color:var(--ink)}
+.tog button:first-child{border-radius:6px 0 0 6px}
+.tog button:last-child{border-radius:0 6px 6px 0;border-left:0}
+.tog button.on{background:var(--ink);color:var(--paper)}
+svg{width:min(300px,78vw);height:auto}
+.b{fill:var(--body);stroke:#c9d0da}
+.z{fill:var(--zone);stroke:var(--paper);stroke-width:1.5;cursor:pointer;transition:fill .15s}
+.z:hover,.z.sel{fill:var(--acc)}
+#map.back .F,#map:not(.back) .K{display:none}
+#cap{min-height:1.6rem;font-weight:700}
+.bk{display:inline-block;margin:.5rem 0 1rem;color:var(--mut)}
+h2{font-size:clamp(2rem,5vw,3rem);margin-bottom:.8rem}
+h3{font-size:1.4rem;margin:1.6rem 0 .8rem}
+.mut{color:var(--mut)}
+.list{border-top:2px solid var(--ink)}
+.row{display:grid;grid-template-columns:1fr auto auto;gap:.5rem 1rem;align-items:center;padding:.9rem .3rem;border-bottom:1px solid var(--line);text-decoration:none}
+.row:hover{background:var(--card)}
+.rn{font-weight:700;font-size:1.1rem}
+.rn small{display:block;font-weight:400;color:var(--mut);font-size:.85rem}
+.tags{display:flex;gap:.3rem;flex-wrap:wrap}
+.tag{font-style:normal;font-size:.8rem;border:1px solid var(--line);background:var(--card);border-radius:4px;padding:.05rem .5rem}
+.tag.lv{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tag.w{color:var(--warn);border-color:var(--warn)}
+.tag.c{color:var(--acc);border-color:var(--acc)}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap;margin:.8rem 0}
+.chip{border:1px solid var(--ink);border-radius:99px;padding:.15rem .8rem;text-decoration:none;font-size:.9rem}
+.chip.primary{background:var(--ink);color:var(--paper)}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.vid{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.th{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:0;padding:0;background:#000 center/cover;position:relative}
+.th span{position:absolute;inset:0;display:grid;place-items:center;font-size:2.4rem;color:#fff;text-shadow:0 0 12px #000}
+.vm{padding:.7rem .8rem}
+.vm b{display:block;margin-bottom:.4rem;overflow-wrap:anywhere}
+.act{display:flex;align-items:center;gap:.4rem;margin-top:.6rem}
+.act button{padding:.2rem .6rem}
+.act .rp{margin-left:auto;border:0;background:none;color:var(--mut);font-size:.85rem}
+#addf{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+#addf input{flex:1 1 260px}
+footer{max-width:1020px;margin:2rem auto 1rem;padding:0 1rem;color:var(--mut);font-size:.85rem}
+#toast{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:.6rem 1rem;border-radius:6px;max-width:90vw;z-index:20}
+dialog{background:var(--card);color:var(--ink);border:1px solid var(--ink);border-radius:10px}
+dialog::backdrop{background:#12151Caa}
+#af{display:grid;gap:.6rem;min-width:min(300px,76vw)}
+.btns{display:flex;gap:.5rem}
+@media(max-width:560px){.row{grid-template-columns:1fr auto}.tags{grid-column:1/-1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="demo" class="demo" hidden></div>
+<header>
+  <a class="logo" href="#/">SportAide</a>
+  <select id="lv" aria-label="Niveau"><option value=""></option><option value="beginner"></option><option value="intermediate"></option><option value="advanced"></option></select>
+  <select id="lg" aria-label="Langue"><option value="fr">Français</option><option value="en">English</option></select>
+  <button id="ab"></button>
+</header>
+
+<main>
+  <section id="home" class="hero">
+    <div>
+      <h1 data-i="h1"></h1>
+      <p class="sub" data-i="sub"></p>
+      <div class="search"><input id="q" data-p="ph" autocomplete="off"><div id="sug"></div></div>
+    </div>
+    <div class="mapbox">
+      <div class="tog"><button id="sf" class="on" data-i="front"></button><button id="sbk" data-i="back"></button></div>
+      <svg id="map" viewBox="0 0 200 400" role="group" aria-label="Carte du corps">
+        <g class="b"><circle cx="100" cy="36" r="20"/><rect x="90" y="52" width="20" height="18" rx="6"/><rect x="66" y="74" width="68" height="124" rx="26"/><rect x="36" y="86" width="24" height="142" rx="12"/><rect x="140" y="86" width="24" height="142" rx="12"/><rect x="68" y="190" width="32" height="200" rx="15"/><rect x="100" y="190" width="32" height="200" rx="15"/></g>
+        <g class="F">
+          <ellipse class="z" data-z="zone-deltoids" cx="58" cy="94" rx="14" ry="13"/><ellipse class="z" data-z="zone-deltoids" cx="142" cy="94" rx="14" ry="13"/>
+          <rect class="z" data-z="zone-pectoralis-major" x="72" y="90" width="27" height="28" rx="11"/><rect class="z" data-z="zone-pectoralis-major" x="101" y="90" width="27" height="28" rx="11"/>
+          <rect class="z" data-z="zone-abdominals" x="84" y="122" width="32" height="56" rx="10"/>
+          <ellipse class="z" data-z="zone-biceps-brachii" cx="48" cy="132" rx="9" ry="20"/><ellipse class="z" data-z="zone-biceps-brachii" cx="152" cy="132" rx="9" ry="20"/>
+          <ellipse class="z" data-z="zone-forearms" cx="48" cy="186" rx="8" ry="24"/><ellipse class="z" data-z="zone-forearms" cx="152" cy="186" rx="8" ry="24"/>
+          <rect class="z" data-z="zone-quadriceps" x="70" y="200" width="28" height="86" rx="13"/><rect class="z" data-z="zone-quadriceps" x="102" y="200" width="28" height="86" rx="13"/>
+        </g>
+        <g class="K">
+          <path class="z" data-z="zone-trapezius" d="M100 70 L74 86 L100 124 L126 86Z"/>
+          <ellipse class="z" data-z="zone-deltoids" cx="58" cy="94" rx="14" ry="13"/><ellipse class="z" data-z="zone-deltoids" cx="142" cy="94" rx="14" ry="13"/>
+          <path class="z" data-z="zone-latissimus-dorsi" d="M76 100 L98 128 L98 170 L82 154Z"/><path class="z" data-z="zone-latissimus-dorsi" d="M124 100 L102 128 L102 170 L118 154Z"/>
+          <ellipse class="z" data-z="zone-triceps-brachii" cx="48" cy="132" rx="9" ry="20"/><ellipse class="z" data-z="zone-triceps-brachii" cx="152" cy="132" rx="9" ry="20"/>
+          <ellipse class="z" data-z="zone-forearms" cx="48" cy="186" rx="8" ry="24"/><ellipse class="z" data-z="zone-forearms" cx="152" cy="186" rx="8" ry="24"/>
+          <ellipse class="z" data-z="zone-glutes" cx="86" cy="192" rx="15" ry="15"/><ellipse class="z" data-z="zone-glutes" cx="114" cy="192" rx="15" ry="15"/>
+          <rect class="z" data-z="zone-hamstrings" x="70" y="210" width="28" height="76" rx="13"/><rect class="z" data-z="zone-hamstrings" x="102" y="210" width="28" height="76" rx="13"/>
+          <ellipse class="z" data-z="zone-calves" cx="84" cy="326" rx="12" ry="32"/><ellipse class="z" data-z="zone-calves" cx="116" cy="326" rx="12" ry="32"/>
+        </g>
+      </svg>
+      <div id="cap" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="muscle" hidden>
+    <a class="bk" href="#/" data-i="home"></a>
+    <h2 id="mt"></h2>
+    <div id="mlist" class="list"></div>
+  </section>
+
+  <section id="exo" hidden>
+    <a class="bk" href="#/" data-i="home"></a>
+    <h2 id="et"></h2>
+    <div id="emeta" class="tags"></div>
+    <p id="ed"></p>
+    <div id="chips" class="chips"></div>
+    <h3 data-i="vid"></h3>
+    <div id="vids" class="grid"></div>
+    <form id="addf"><input id="vurl" data-p="urlph" required><button class="pri" data-i="send"></button></form>
+  </section>
+</main>
+
+<footer data-i="warn"></footer>
+<div id="toast" hidden></div>
+
+<dialog id="auth">
+  <form id="af">
+    <h3 data-i="login"></h3>
+    <input id="mail" type="email" required autocomplete="email" placeholder="Email">
+    <input id="pw" type="password" required minlength="6" autocomplete="current-password" data-p="pw">
+    <div class="btns"><button class="pri" data-i="signin"></button><button type="button" id="bup" data-i="signup"></button><button type="button" id="bx" aria-label="Fermer">×</button></div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+// 1. Colle ici l’URL du projet et la clé « anon » (Supabase > Project Settings > API).
+//    Laisse vide pour tester le site en mode démo.
+const CFG = { url: "", key: "" };
+
+const sb = CFG.url ? supabase.createClient(CFG.url, CFG.key) : null;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => "&#" + c.charCodeAt(0) + ";");
+const norm = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
+const T = {
+fr:{h1:"Choisis un muscle, trouve l’exercice.",sub:"Des vidéos d’exercices partagées par la communauté et classées par vote.",ph:"Biceps, pectoraux, mollets…",front:"Face",back:"Dos",all:"Tous niveaux",beginner:"Débutant",intermediate:"Intermédiaire",advanced:"Avancé",login:"Connexion",logout:"Déconnexion",signin:"Se connecter",signup:"Créer un compte",pw:"Mot de passe",hi:"Connecté.",confirm:"Compte créé. Confirme ton email, puis connecte-toi.",home:"← Accueil",prim:"Muscle principal",sec:"Muscle secondaire",vids:"vidéos",none:"Aucun exercice pour ce niveau.",noV:"Aucune vidéo pour l’instant. Ajoute la première ci-dessous.",vid:"Vidéos de la communauté",urlph:"Colle un lien YouTube",send:"Ajouter la vidéo",ref:"Référence",coach:"Validée par un coach",pend:"En attente de validation",rep:"Signaler",reported:"Merci, signalement envoyé.",repdup:"Tu as déjà signalé cette vidéo.",badurl:"Lien YouTube non reconnu.",dup:"Cette vidéo est déjà ajoutée.",okpub:"Vidéo publiée.",okpend:"Vidéo envoyée. Elle sera visible après validation.",demo:"Mode démo : ajoute l’URL et la clé Supabase dans index.html pour activer les comptes et les vidéos.",warn:"Les vidéos sont publiées par la communauté et ne remplacent pas l’avis d’un coach ou d’un professionnel de santé. Commence léger et arrête-toi en cas de douleur.",video:"Vidéo"},
+en:{h1:"Pick a muscle, find the exercise.",sub:"Exercise videos shared by the community and ranked by votes.",ph:"Biceps, chest, calves…",front:"Front",back:"Back",all:"All levels",beginner:"Beginner",intermediate:"Intermediate",advanced:"Advanced",login:"Log in",logout:"Log out",signin:"Log in",signup:"Create account",pw:"Password",hi:"Logged in.",confirm:"Account created. Confirm your email, then log in.",home:"← Home",prim:"Primary muscle",sec:"Secondary muscle",vids:"videos",none:"No exercise for this level.",noV:"No video yet. Add the first one below.",vid:"Community videos",urlph:"Paste a YouTube link",send:"Add video",ref:"Reference",coach:"Coach-validated",pend:"Awaiting review",rep:"Report",reported:"Thanks, report sent.",repdup:"You already reported this video.",badurl:"YouTube link not recognised.",dup:"This video is already added.",okpub:"Video published.",okpend:"Video sent. It will show up after review.",demo:"Demo mode: add the Supabase URL and key in index.html to enable accounts and videos.",warn:"Videos are posted by the community and do not replace advice from a coach or a health professional. Start light and stop if you feel pain.",video:"Video"}
+};
+const EQ = {bodyweight:["Poids du corps","Bodyweight"],dumbbell:["Haltères","Dumbbells"],barbell:["Barre","Barbell"],machine:["Machine","Machine"],bench:["Banc","Bench"],band:["Élastique","Band"],cable:["Poulie","Cable"]};
+
+// Données du mode démo (sans Supabase)
+const DM = [["pectoralis-major","front","Pectoraux","Pectorals"],["latissimus-dorsi","back","Grand dorsal","Lats"],["trapezius","back","Trapèzes","Trapezius"],["deltoids","front","Deltoïdes","Deltoids"],["biceps-brachii","front","Biceps","Biceps"],["triceps-brachii","back","Triceps","Triceps"],["forearms","front","Avant-bras","Forearms"],["abdominals","front","Abdominaux","Abs"],["quadriceps","front","Quadriceps","Quadriceps"],["hamstrings","back","Ischio-jambiers","Hamstrings"],["glutes","back","Fessiers","Glutes"],["calves","back","Mollets","Calves"]]
+  .map(([s,sd,f,e]) => ({slug:s, side:sd, zone:"zone-"+s, names:{fr:f, en:e}}));
+const DE = [
+  {id:1,level:"beginner",eq:["bodyweight"],n:{fr:"Pompes",en:"Push-ups"},d:{fr:"Mains à largeur d’épaules, corps gainé : descends la poitrine vers le sol, puis pousse.",en:"Hands shoulder-width apart, body straight: lower your chest to the floor, then push up."},m:{"pectoralis-major":"primary","triceps-brachii":"secondary","deltoids":"secondary"}},
+  {id:2,level:"beginner",eq:["dumbbell"],n:{fr:"Curl biceps haltères",en:"Dumbbell biceps curl"},d:{fr:"Coudes près du corps, fléchis l’avant-bras sans balancer le buste.",en:"Keep your elbows close and curl without swinging your torso."},m:{"biceps-brachii":"primary","forearms":"secondary"}},
+  {id:3,level:"beginner",eq:["bodyweight"],n:{fr:"Extensions mollets",en:"Calf raises"},d:{fr:"Debout, monte sur la pointe des pieds, puis redescends lentement.",en:"Stand tall, rise onto your toes, then lower slowly."},m:{calves:"primary"}}
+];
+
+let lang = localStorage.lang || (navigator.language || "").slice(0, 2);
+if (!T[lang]) lang = "en";
+let level = localStorage.level || "", muscles = [], user = null, cur = null;
+const t = k => T[lang][k] || T.en[k] || k;
+const mn = m => m.names[lang] || m.names.en || m.slug;
+const eqs = a => (a || []).map(x => EQ[x] ? EQ[x][lang === "fr" ? 0 : 1] : esc(x));
+const toast = s => { const e = $("#toast"); e.textContent = s; e.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => e.hidden = true, 4500); };
+
+function applyI18n() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i]").forEach(e => e.textContent = t(e.dataset.i));
+  document.querySelectorAll("[data-p]").forEach(e => e.placeholder = t(e.dataset.p));
+  ["", "beginner", "intermediate", "advanced"].forEach((v, i) => $("#lv").options[i].text = t(v || "all"));
+  $("#ab").textContent = user ? t("logout") : t("login");
+  $("#demo").textContent = t("demo"); $("#demo").hidden = !!sb;
+  document.querySelectorAll(".z").forEach(z => { const m = muscles.find(x => x.zone === z.dataset.z); if (m) z.setAttribute("aria-label", mn(m)); });
+}
+
+// ---------- Données ----------
+async function dbMuscles() {
+  const { data, error } = await sb.from("muscles").select("slug,side,svg_zone_id,muscle_translations(lang,name)");
+  if (error) { toast(error.message); return DM; }
+  return data.map(m => ({slug:m.slug, side:m.side, zone:m.svg_zone_id, names:Object.fromEntries(m.muscle_translations.map(x => [x.lang, x.name]))}));
+}
+async function listEx(slug) {
+  if (!sb) return DE.filter(e => e.m[slug] && (!level || e.level === level)).map(e => ({id:e.id, name:e.n[lang] || e.n.en, level:e.level, eq:e.eq, role:e.m[slug], n:0}));
+  const { data, error } = await sb.rpc("exercises_by_muscle", {p_muscle_slug:slug, p_lang:lang, p_level:level || null});
+  if (error) { toast(error.message); return []; }
+  return data.map(r => ({id:r.exercise_id, name:r.exercise_name, level:r.exercise_level, eq:r.equipment, role:r.role_in_exercise, n:r.video_count}));
+}
+async function getExo(id) {
+  if (!sb) { const e = DE.find(x => x.id == id); return e && {id:e.id, level:e.level, eq:e.eq, name:e.n[lang] || e.n.en, desc:e.d[lang] || e.d.en, ms:Object.entries(e.m).map(([s, r]) => ({slug:s, role:r}))}; }
+  const { data } = await sb.from("exercises").select("id,level,equipment,exercise_translations(lang,name,description),exercise_muscles(role,muscles(slug))").eq("id", id).maybeSingle();
+  if (!data) return null;
+  const tr = data.exercise_translations.find(x => x.lang === lang) || data.exercise_translations.find(x => x.lang === "en") || data.exercise_translations[0] || {};
+  return {id:data.id, level:data.level, eq:data.equipment, name:tr.name || "?", desc:tr.description || "", ms:data.exercise_muscles.map(x => ({slug:x.muscles.slug, role:x.role}))};
+}
+
+// ---------- Vues ----------
+async function showMuscle(slug) {
+  const m = muscles.find(x => x.slug === slug); if (!m) return;
+  $("#mt").textContent = mn(m);
+  document.querySelectorAll(".z").forEach(z => z.classList.toggle("sel", z.dataset.z === m.zone));
+  const rows = await listEx(slug);
+  $("#mlist").innerHTML = rows.length ? rows.map(r =>
+    `<a class="row" href="#/exo/${esc(r.id)}"><span class="rn">${esc(r.name)}<small>${t(r.role === "primary" ? "prim" : "sec")}</small></span>` +
+    `<span class="tags"><i class="tag lv">${t(r.level)}</i>${eqs(r.eq).map(x => `<i class="tag">${x}</i>`).join("")}</span>` +
+    `<span class="mut">${r.n} ${t("vids")}</span></a>`).join("") : `<p class="mut">${t("none")}</p>`;
+}
+async function showExo(id) {
+  if (!/^\d+$/.test(id)) return;
+  const e = await getExo(id);
+  if (!e) { $("#et").textContent = "404"; return; }
+  cur = e;
+  $("#et").textContent = e.name;
+  $("#emeta").innerHTML = `<i class="tag lv">${t(e.level)}</i>` + eqs(e.eq).map(x => `<i class="tag">${x}</i>`).join("");
+  $("#ed").textContent = e.desc;
+  $("#chips").innerHTML = e.ms.map(x => { const m = muscles.find(y => y.slug === x.slug); return m ? `<a class="chip ${x.role}" href="#/muscle/${esc(m.slug)}" title="${t(x.role === "primary" ? "prim" : "sec")}">${esc(mn(m))}</a>` : ""; }).join("");
+  loadVideos();
+}
+function vcard(v) {
+  const id = /^[\w-]{11}$/.test(v.external_id || "") ? v.external_id : null;
+  if (!id) return "";
+  const tags = (v.is_reference ? `<i class="tag c">★ ${t("ref")}</i>` : "") + (v.coach_validated ? `<i class="tag c">✓ ${t("coach")}</i>` : "") + (v.status !== "published" ? `<i class="tag w">${t("pend")}</i>` : "");
+  return `<div class="vid"><button class="th" data-id="${id}" style="background-image:url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)" aria-label="${t("video")}"><span>▶</span></button>` +
+    `<div class="vm"><b>${esc(v.title || t("video"))}</b><div class="tags">${tags}</div>` +
+    `<div class="act"><button data-v="${v.id}" data-val="1" aria-label="+1">▲</button><b>${v.score}</b><button data-v="${v.id}" data-val="-1" aria-label="-1">▼</button><button class="rp" data-r="${v.id}">⚑ ${t("rep")}</button></div></div></div>`;
+}
+async function loadVideos() {
+  const box = $("#vids");
+  if (!sb) { box.innerHTML = `<p class="mut">${t("demo")}</p>`; return; }
+  const { data, error } = await sb.from("videos").select("id,external_id,title,score,status,is_reference,coach_validated")
+    .eq("exercise_id", cur.id).order("is_reference", {ascending:false}).order("coach_validated", {ascending:false}).order("score", {ascending:false});
+  if (error) return toast(error.message);
+  box.innerHTML = data.length ? data.map(vcard).join("") : `<p class="mut">${t("noV")}</p>`;
+}
+function route() {
+  const [, k, v] = location.hash.match(/^#\/(\w+)\/(.+)$/) || [];
+  $("#home").hidden = !!k; $("#muscle").hidden = k !== "muscle"; $("#exo").hidden = k !== "exo";
+  if (k === "muscle") showMuscle(v); else if (k === "exo") showExo(v);
+  window.scrollTo(0, 0);
+}
+
+// ---------- Carte et recherche ----------
+function setSide(s) { $("#map").classList.toggle("back", s === "back"); $("#sf").classList.toggle("on", s === "front"); $("#sbk").classList.toggle("on", s === "back"); }
+$("#sf").onclick = () => setSide("front");
+$("#sbk").onclick = () => setSide("back");
+$("#map").addEventListener("click", e => { const z = e.target.closest(".z"), m = z && muscles.find(x => x.zone === z.dataset.z); if (m) location.hash = "#/muscle/" + m.slug; });
+$("#map").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList.contains("z")) e.target.dispatchEvent(new MouseEvent("click", {bubbles:true})); });
+$("#map").addEventListener("mouseover", e => { const z = e.target.closest(".z"), m = z && muscles.find(x => x.zone === z.dataset.z); $("#cap").textContent = m ? mn(m) : ""; });
+function go(slug) { const m = muscles.find(x => x.slug === slug); if (!m) return; setSide(m.side); $("#q").value = ""; $("#sug").innerHTML = ""; location.hash = "#/muscle/" + slug; }
+$("#q").addEventListener("input", () => {
+  const q = norm($("#q").value.trim());
+  const r = q ? muscles.filter(m => Object.values(m.names).some(n => norm(n).includes(q))).slice(0, 6) : [];
+  $("#sug").innerHTML = r.map(m => `<button data-s="${esc(m.slug)}">${esc(mn(m))}</button>`).join("");
+});
+$("#q").addEventListener("keydown", e => { if (e.key === "Enter") { const b = $("#sug button"); if (b) go(b.dataset.s); } });
+$("#sug").addEventListener("click", e => { const b = e.target.closest("button"); if (b) go(b.dataset.s); });
+
+// ---------- Vidéos : lecture, votes, signalements, ajout ----------
+$("#vids").addEventListener("click", async e => {
+  const th = e.target.closest(".th");
+  if (th) { th.outerHTML = `<iframe class="th" src="https://www.youtube-nocookie.com/embed/${th.dataset.id}?autoplay=1" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`; return; }
+  const b = e.target.closest("button"); if (!b) return;
+  if (!sb) return toast(t("demo"));
+  if (!user) return openAuth();
+  if (b.dataset.v) {
+    const { error } = await sb.from("votes").upsert({user_id:user.id, video_id:+b.dataset.v, value:+b.dataset.val}, {onConflict:"user_id,video_id"});
+    if (error) toast(error.message); else loadVideos();
+  } else if (b.dataset.r) {
+    const { error } = await sb.from("reports").insert({video_id:+b.dataset.r, user_id:user.id, reason:"other"});
+    toast(error ? (error.code === "23505" ? t("repdup") : error.message) : t("reported"));
+  }
+});
+$("#addf").onsubmit = async e => {
+  e.preventDefault();
+  if (!sb) return toast(t("demo"));
+  if (!user) return openAuth();
+  const id = ($("#vurl").value.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/) || [])[1];
+  if (!id) return toast(t("badurl"));
+  let title = null;
+  try { const r = await fetch("https://www.youtube.com/oembed?format=json&url=" + encodeURIComponent("https://www.youtube.com/watch?v=" + id)); if (r.ok) title = (await r.json()).title; } catch {}
+  const { data, error } = await sb.from("videos").insert({exercise_id:cur.id, user_id:user.id, source:"youtube", external_id:id, title, thumbnail_url:"https://i.ytimg.com/vi/" + id + "/hqdefault.jpg", language:lang, level:cur.level}).select("status").single();
+  if (error) return toast(error.code === "23505" ? t("dup") : error.message);
+  $("#vurl").value = ""; toast(t(data.status === "published" ? "okpub" : "okpend")); loadVideos();
+};
+
+// ---------- Compte ----------
+function openAuth() { if (!sb) return toast(t("demo")); $("#auth").showModal(); }
+async function auth(kind) {
+  const email = $("#mail").value, password = $("#pw").value;
+  const { data, error } = kind === "up" ? await sb.auth.signUp({email, password}) : await sb.auth.signInWithPassword({email, password});
+  if (error) return toast(error.message);
+  $("#auth").close(); toast(kind === "up" && !data.session ? t("confirm") : t("hi"));
+}
+$("#af").onsubmit = e => { e.preventDefault(); auth("in"); };
+$("#bup").onclick = () => $("#af").reportValidity() && auth("up");
+$("#bx").onclick = () => $("#auth").close();
+$("#ab").onclick = () => user ? sb.auth.signOut() : openAuth();
+
+// ---------- Langue, niveau, démarrage ----------
+$("#lg").onchange = e => { lang = e.target.value; localStorage.lang = lang; applyI18n(); route(); };
+$("#lv").onchange = e => { level = e.target.value; localStorage.level = level; route(); };
+addEventListener("hashchange", route);
+
+(async () => {
+  $("#lg").value = lang; $("#lv").value = level;
+  muscles = sb ? await dbMuscles() : DM;
+  if (sb) {
+    const { data } = await sb.auth.getSession(); user = data.session ? data.session.user : null;
+    sb.auth.onAuthStateChange((_, s) => { user = s ? s.user : null; applyI18n(); });
+  }
+  document.querySelectorAll(".z").forEach(z => { z.tabIndex = 0; z.setAttribute("role", "button"); });
+  applyI18n(); route();
+})();
+</script>
+</body>
+</html>
