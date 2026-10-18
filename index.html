@@ -248,7 +248,7 @@ function applyI18n() {
   $("#aboutc").innerHTML = t("about");
   $("#faqc").innerHTML = t("faq").map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("");
   ["beginner", "intermediate", "advanced"].forEach((v, i) => $("#xl").options[i].text = t(v));
-  $("#demo").textContent = t("demo"); $("#demo").hidden = !!sb;
+  $("#demo").textContent = t("demo"); $("#demo").hidden = true;
   document.querySelectorAll(".z").forEach(z => { const m = muscles.find(x => x.zone === z.dataset.z); if (m) z.setAttribute("aria-label", mn(m)); });
 }
 
