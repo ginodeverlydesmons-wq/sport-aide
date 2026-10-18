@@ -4,11 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SportAide : choisis un muscle, trouve l’exercice</title>
+<meta name="description" content="Choisis un muscle sur la silhouette et trouve des exercices, avec des vidéos partagées par la communauté.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SportAide">
+<meta property="og:title" content="SportAide : choisis un muscle, trouve l’exercice">
+<meta property="og:description" content="Une silhouette interactive, des exercices par muscle et des vidéos de la communauté.">
+<meta property="og:url" content="https://ginodeverlydesmons-wq.github.io/sport-aide/">
+<meta property="og:image" content="https://ginodeverlydesmons-wq.github.io/sport-aide/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<script>document.documentElement.dataset.theme=localStorage.theme||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#EEF1F4;--ink:#12151C;--mut:#5B6472;--line:#D3D9E1;--card:#fff;--body:#DCE1E9;--zone:#B4BFD0;--acc:#2338E6;--warn:#9A5B00;color-scheme:light}
+:root{--paper:#EEF1F4;--ink:#12151C;--mut:#5B6472;--line:#D3D9E1;--card:#fff;--body:#DCE1E9;--zone:#B4BFD0;--acc:#2338E6;--onacc:#fff;--warn:#9A5B00;color-scheme:light}
+:root[data-theme=dark]{--paper:#12151C;--ink:#EEF1F4;--mut:#9AA3B2;--line:#2B313C;--card:#1A1E26;--body:#272D38;--zone:#3B4556;--acc:#8A97FF;--onacc:#12151C;--warn:#F0B050;color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 "DM Sans",system-ui,sans-serif}
@@ -17,7 +30,7 @@ a{color:inherit}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 select,input,button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:.5rem .75rem}
 button{cursor:pointer}
-button.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+button.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc);font-weight:700}
 .demo{background:var(--ink);color:var(--paper);padding:.5rem 1rem;font-size:.9rem}
 header{display:flex;gap:.6rem;align-items:center;padding:.8rem 1rem;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .logo{font-size:1.7rem;font-weight:700;margin-right:auto;text-decoration:none}
@@ -38,7 +51,7 @@ main{max-width:1020px;margin:0 auto;padding:1rem}
 .tog button:last-child{border-radius:0 6px 6px 0;border-left:0}
 .tog button.on{background:var(--ink);color:var(--paper)}
 svg{width:min(300px,78vw);height:auto}
-.b{fill:var(--body);stroke:#c9d0da}
+.b{fill:var(--body);stroke:var(--line)}
 .z{fill:var(--zone);stroke:var(--paper);stroke-width:1.5;cursor:pointer;transition:fill .15s}
 .z:hover,.z.sel{fill:var(--acc)}
 #map.back .F,#map:not(.back) .K{display:none}
@@ -78,6 +91,18 @@ dialog::backdrop{background:#12151Caa}
 #af{display:grid;gap:.6rem;min-width:min(300px,76vw)}
 .btns{display:flex;gap:.5rem}
 @media(max-width:560px){.row{grid-template-columns:1fr auto}.tags{grid-column:1/-1}}
+.fbar{display:flex;gap:.4rem;flex-wrap:wrap;margin:0 0 1rem}
+.fbar button{border-radius:99px;padding:.2rem .8rem;font-size:.9rem}
+.fbar button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+#addx{margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line);display:grid;gap:.6rem;max-width:560px}
+#addx textarea{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:.5rem .75rem;min-height:4.5rem}
+#addx p{margin:0}
+.page{max-width:62ch}
+.page p{margin:0 0 1rem}
+details{border-bottom:1px solid var(--line);padding:.8rem 0}
+summary{cursor:pointer;font-weight:700}
+details p{margin:.6rem 0 0;color:var(--mut)}
+footer nav{display:flex;gap:1rem;margin-top:.6rem}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -87,6 +112,7 @@ dialog::backdrop{background:#12151Caa}
   <a class="logo" href="#/">SportAide</a>
   <select id="lv" aria-label="Niveau"><option value=""></option><option value="beginner"></option><option value="intermediate"></option><option value="advanced"></option></select>
   <select id="lg" aria-label="Langue"><option value="fr">Français</option><option value="en">English</option></select>
+  <button id="th" aria-label="Thème"></button>
   <button id="ab"></button>
 </header>
 
@@ -127,7 +153,19 @@ dialog::backdrop{background:#12151Caa}
   <section id="muscle" hidden>
     <a class="bk" href="#/" data-i="home"></a>
     <h2 id="mt"></h2>
+    <div id="eqf" class="fbar" role="group" aria-label="Matériel"></div>
     <div id="mlist" class="list"></div>
+    <form id="addx">
+      <h3 data-i="addx"></h3>
+      <input id="xn" required maxlength="80" data-p="xnph">
+      <p class="mut" data-i="xeql"></p>
+      <div id="xeq" class="fbar" role="group"></div>
+      <select id="xl"><option value="beginner"></option><option value="intermediate"></option><option value="advanced"></option></select>
+      <textarea id="xd" maxlength="400" data-p="xdph"></textarea>
+      <input id="xv" data-p="xvph">
+      <button class="pri" data-i="xsend"></button>
+      <p class="mut" data-i="xnote"></p>
+    </form>
   </section>
 
   <section id="exo" hidden>
@@ -140,9 +178,11 @@ dialog::backdrop{background:#12151Caa}
     <div id="vids" class="grid"></div>
     <form id="addf"><input id="vurl" data-p="urlph" required><button class="pri" data-i="send"></button></form>
   </section>
+  <section id="about" class="page" hidden><a class="bk" href="#/" data-i="home"></a><h2 data-i="aboutl"></h2><div id="aboutc"></div></section>
+  <section id="faq" class="page" hidden><a class="bk" href="#/" data-i="home"></a><h2>FAQ</h2><div id="faqc"></div></section>
 </main>
 
-<footer data-i="warn"></footer>
+<footer><p data-i="warn"></p><nav><a href="#/about" data-i="aboutl"></a><a href="#/faq">FAQ</a></nav></footer>
 <div id="toast" hidden></div>
 
 <dialog id="auth">
@@ -166,10 +206,14 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => "&#" + c.charCodeAt(0)
 const norm = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 
 const T = {
-fr:{h1:"Choisis un muscle, trouve l’exercice.",sub:"Des vidéos d’exercices partagées par la communauté et classées par vote.",ph:"Biceps, pectoraux, mollets…",front:"Face",back:"Dos",all:"Tous niveaux",beginner:"Débutant",intermediate:"Intermédiaire",advanced:"Avancé",login:"Connexion",logout:"Déconnexion",signin:"Se connecter",signup:"Créer un compte",pw:"Mot de passe",hi:"Connecté.",confirm:"Compte créé. Confirme ton email, puis connecte-toi.",home:"← Accueil",prim:"Muscle principal",sec:"Muscle secondaire",vids:"vidéos",none:"Aucun exercice pour ce niveau.",noV:"Aucune vidéo pour l’instant. Ajoute la première ci-dessous.",vid:"Vidéos de la communauté",urlph:"Colle un lien YouTube",send:"Ajouter la vidéo",ref:"Référence",coach:"Validée par un coach",pend:"En attente de validation",rep:"Signaler",reported:"Merci, signalement envoyé.",repdup:"Tu as déjà signalé cette vidéo.",badurl:"Lien YouTube non reconnu.",dup:"Cette vidéo est déjà ajoutée.",okpub:"Vidéo publiée.",okpend:"Vidéo envoyée. Elle sera visible après validation.",demo:"Mode démo : ajoute l’URL et la clé Supabase dans index.html pour activer les comptes et les vidéos.",warn:"Les vidéos sont publiées par la communauté et ne remplacent pas l’avis d’un coach ou d’un professionnel de santé. Commence léger et arrête-toi en cas de douleur.",video:"Vidéo"},
-en:{h1:"Pick a muscle, find the exercise.",sub:"Exercise videos shared by the community and ranked by votes.",ph:"Biceps, chest, calves…",front:"Front",back:"Back",all:"All levels",beginner:"Beginner",intermediate:"Intermediate",advanced:"Advanced",login:"Log in",logout:"Log out",signin:"Log in",signup:"Create account",pw:"Password",hi:"Logged in.",confirm:"Account created. Confirm your email, then log in.",home:"← Home",prim:"Primary muscle",sec:"Secondary muscle",vids:"videos",none:"No exercise for this level.",noV:"No video yet. Add the first one below.",vid:"Community videos",urlph:"Paste a YouTube link",send:"Add video",ref:"Reference",coach:"Coach-validated",pend:"Awaiting review",rep:"Report",reported:"Thanks, report sent.",repdup:"You already reported this video.",badurl:"YouTube link not recognised.",dup:"This video is already added.",okpub:"Video published.",okpend:"Video sent. It will show up after review.",demo:"Demo mode: add the Supabase URL and key in index.html to enable accounts and videos.",warn:"Videos are posted by the community and do not replace advice from a coach or a health professional. Start light and stop if you feel pain.",video:"Video"}
+fr:{h1:"Choisis un muscle, trouve l’exercice.",sub:"Des vidéos d’exercices partagées par la communauté et classées par vote.",ph:"Biceps, pectoraux, mollets…",front:"Face",back:"Dos",all:"Tous niveaux",beginner:"Débutant",intermediate:"Intermédiaire",advanced:"Avancé",login:"Connexion",logout:"Déconnexion",signin:"Se connecter",signup:"Créer un compte",pw:"Mot de passe",hi:"Connecté.",confirm:"Compte créé. Confirme ton email, puis connecte-toi.",home:"← Accueil",prim:"Muscle principal",sec:"Muscle secondaire",vids:"vidéos",none:"Aucun exercice pour ce niveau.",noV:"Aucune vidéo pour l’instant. Ajoute la première ci-dessous.",vid:"Vidéos de la communauté",urlph:"Colle un lien YouTube",send:"Ajouter la vidéo",ref:"Référence",coach:"Validée par un coach",pend:"En attente de validation",rep:"Signaler",reported:"Merci, signalement envoyé.",repdup:"Tu as déjà signalé cette vidéo.",badurl:"Lien YouTube non reconnu.",dup:"Cette vidéo est déjà ajoutée.",okpub:"Vidéo publiée.",okpend:"Vidéo envoyée. Elle sera visible après validation.",demo:"Mode démo : ajoute l’URL et la clé Supabase dans index.html pour activer les comptes et les vidéos.",warn:"Les vidéos sont publiées par la communauté et ne remplacent pas l’avis d’un coach ou d’un professionnel de santé. Commence léger et arrête-toi en cas de douleur.",video:"Vidéo",mine:"Ajouté par toi",addx:"Ajouter un exercice pour ce muscle",xnph:"Nom de l’exercice (ex. pompes lestées sur chaise romaine)",xeql:"Matériel utilisé",xdph:"Comment le faire (optionnel)",xvph:"Lien YouTube (optionnel)",xsend:"Ajouter l’exercice",xnote:"Pour l’instant, ton exercice est enregistré seulement sur cet appareil.",xok:"Exercice ajouté.",aboutl:"À propos",
+about:"<p>SportAide aide à trouver le bon exercice pour chaque muscle : tu choisis un muscle sur la silhouette ou dans la recherche, puis tu filtres par niveau et par matériel (poids du corps, barre, haltères, lest…).</p><p>Chacun peut proposer ses propres exercices et ses vidéos. Les vidéos viennent de YouTube et sont affichées avec le lecteur officiel : elles restent la propriété de leurs auteurs.</p><p>C’est un projet indépendant, en cours de construction. Le vote, le signalement et la validation par des coachs sont prévus pour garder un contenu de qualité.</p>",
+faq:[["C’est quoi SportAide ?","Un site pour trouver des exercices muscle par muscle, avec des vidéos partagées par la communauté."],["Est-ce gratuit ?","Oui, le site est gratuit pour l’instant."],["Comment trouver un exercice ?","Clique sur un muscle de la silhouette (boutons Face et Dos) ou tape son nom, puis filtre par niveau et par matériel."],["Puis-je ajouter mon propre exercice ?","Oui, en bas de la page d’un muscle, avec le matériel utilisé (barre, poids du corps, lest…). Pour l’instant, il reste enregistré sur ton appareil : le partage avec tout le monde demande une base de données, prévue plus tard."],["D’où viennent les vidéos ?","De YouTube, intégrées avec le lecteur officiel. Elles restent la propriété de leurs auteurs."],["Les exercices sont-ils sans risque ?","Aucun site ne remplace un coach ou un professionnel de santé. Commence avec des charges légères et arrête-toi en cas de douleur."],["Qui vérifie la qualité des vidéos ?","Les votes, les signalements et la validation par des coachs sont prévus, mais ne sont pas encore actifs dans cette version."]]},
+en:{h1:"Pick a muscle, find the exercise.",sub:"Exercise videos shared by the community and ranked by votes.",ph:"Biceps, chest, calves…",front:"Front",back:"Back",all:"All levels",beginner:"Beginner",intermediate:"Intermediate",advanced:"Advanced",login:"Log in",logout:"Log out",signin:"Log in",signup:"Create account",pw:"Password",hi:"Logged in.",confirm:"Account created. Confirm your email, then log in.",home:"← Home",prim:"Primary muscle",sec:"Secondary muscle",vids:"videos",none:"No exercise for this level.",noV:"No video yet. Add the first one below.",vid:"Community videos",urlph:"Paste a YouTube link",send:"Add video",ref:"Reference",coach:"Coach-validated",pend:"Awaiting review",rep:"Report",reported:"Thanks, report sent.",repdup:"You already reported this video.",badurl:"YouTube link not recognised.",dup:"This video is already added.",okpub:"Video published.",okpend:"Video sent. It will show up after review.",demo:"Demo mode: add the Supabase URL and key in index.html to enable accounts and videos.",warn:"Videos are posted by the community and do not replace advice from a coach or a health professional. Start light and stop if you feel pain.",video:"Video",mine:"Added by you",addx:"Add an exercise for this muscle",xnph:"Exercise name (e.g. weighted push-ups on a roman chair)",xeql:"Equipment used",xdph:"How to do it (optional)",xvph:"YouTube link (optional)",xsend:"Add exercise",xnote:"For now, your exercise is saved on this device only.",xok:"Exercise added.",aboutl:"About",
+about:"<p>SportAide helps you find the right exercise for each muscle: pick a muscle on the body map or in the search, then filter by level and equipment (bodyweight, barbell, dumbbells, added weight…).</p><p>Anyone can suggest their own exercises and videos. Videos come from YouTube and are shown with the official player: they remain the property of their authors.</p><p>This is an independent project under construction. Voting, reporting and coach validation are planned to keep content quality high.</p>",
+faq:[["What is SportAide?","A site to find exercises muscle by muscle, with videos shared by the community."],["Is it free?","Yes, the site is free for now."],["How do I find an exercise?","Click a muscle on the body map (Front and Back buttons) or type its name, then filter by level and equipment."],["Can I add my own exercise?","Yes, at the bottom of a muscle page, with the equipment used (barbell, bodyweight, added weight…). For now it stays saved on your device: sharing with everyone needs a database, planned for later."],["Where do the videos come from?","From YouTube, embedded with the official player. They remain the property of their authors."],["Are the exercises risk-free?","No site replaces a coach or a health professional. Start with light weights and stop if you feel pain."],["Who checks video quality?","Votes, reports and coach validation are planned but not active in this version yet."]]}
 };
-const EQ = {bodyweight:["Poids du corps","Bodyweight"],dumbbell:["Haltères","Dumbbells"],barbell:["Barre","Barbell"],machine:["Machine","Machine"],bench:["Banc","Bench"],band:["Élastique","Band"],cable:["Poulie","Cable"]};
+const EQ = {bodyweight:["Poids du corps","Bodyweight"],barbell:["Barre","Barbell"],dumbbell:["Haltères","Dumbbells"],plate:["Poids / lest","Weights / plates"],machine:["Machine","Machine"],cable:["Poulie","Cable"],band:["Élastique","Band"],bench:["Banc","Bench"],chair:["Chaise romaine","Roman chair"]};
 
 // Données du mode démo (sans Supabase)
 const DM = [["pectoralis-major","front","Pectoraux","Pectorals"],["latissimus-dorsi","back","Grand dorsal","Lats"],["trapezius","back","Trapèzes","Trapezius"],["deltoids","front","Deltoïdes","Deltoids"],["biceps-brachii","front","Biceps","Biceps"],["triceps-brachii","back","Triceps","Triceps"],["forearms","front","Avant-bras","Forearms"],["abdominals","front","Abdominaux","Abs"],["quadriceps","front","Quadriceps","Quadriceps"],["hamstrings","back","Ischio-jambiers","Hamstrings"],["glutes","back","Fessiers","Glutes"],["calves","back","Mollets","Calves"]]
@@ -182,7 +226,14 @@ const DE = [
 
 let lang = localStorage.lang || (navigator.language || "").slice(0, 2);
 if (!T[lang]) lang = "en";
-let level = localStorage.level || "", muscles = [], user = null, cur = null;
+let level = localStorage.level || "", muscles = [], user = null, cur = null, theme = document.documentElement.dataset.theme;
+const eqSel = new Set(), xSel = new Set();
+let S = (() => { try { return JSON.parse(localStorage.sa) || {}; } catch { return {}; } })();
+S.ex = S.ex || []; S.vid = S.vid || {};
+const save = () => localStorage.sa = JSON.stringify(S);
+const ytId = s => (s.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/) || [])[1];
+const curSlug = () => (location.hash.match(/muscle\/(.+)$/) || [])[1];
+const localRows = slug => S.ex.filter(e => e.m[slug] && (!level || e.level === level)).map(e => ({id:e.id, name:e.n, level:e.level, eq:e.eq, role:e.m[slug], n:(S.vid[e.id] || []).length, mine:1}));
 const t = k => T[lang][k] || T.en[k] || k;
 const mn = m => m.names[lang] || m.names.en || m.slug;
 const eqs = a => (a || []).map(x => EQ[x] ? EQ[x][lang === "fr" ? 0 : 1] : esc(x));
@@ -194,6 +245,9 @@ function applyI18n() {
   document.querySelectorAll("[data-p]").forEach(e => e.placeholder = t(e.dataset.p));
   ["", "beginner", "intermediate", "advanced"].forEach((v, i) => $("#lv").options[i].text = t(v || "all"));
   $("#ab").textContent = user ? t("logout") : t("login");
+  $("#aboutc").innerHTML = t("about");
+  $("#faqc").innerHTML = t("faq").map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("");
+  ["beginner", "intermediate", "advanced"].forEach((v, i) => $("#xl").options[i].text = t(v));
   $("#demo").textContent = t("demo"); $("#demo").hidden = !!sb;
   document.querySelectorAll(".z").forEach(z => { const m = muscles.find(x => x.zone === z.dataset.z); if (m) z.setAttribute("aria-label", mn(m)); });
 }
@@ -211,7 +265,8 @@ async function listEx(slug) {
   return data.map(r => ({id:r.exercise_id, name:r.exercise_name, level:r.exercise_level, eq:r.equipment, role:r.role_in_exercise, n:r.video_count}));
 }
 async function getExo(id) {
-  if (!sb) { const e = DE.find(x => x.id == id); return e && {id:e.id, level:e.level, eq:e.eq, name:e.n[lang] || e.n.en, desc:e.d[lang] || e.d.en, ms:Object.entries(e.m).map(([s, r]) => ({slug:s, role:r}))}; }
+  if (id[0] === "u") { const e = S.ex.find(x => x.id === id); return e && {id:e.id, level:e.level, eq:e.eq, name:e.n, desc:e.d || "", ms:Object.entries(e.m).map(([s, r]) => ({slug:s, role:r})), mine:1}; }
+  if (!sb) { const e = DE.find(x => x.id == id); return e && {id:e.id, level:e.level, eq:e.eq, name:e.n[lang] || e.n.en, desc:e.d[lang] || e.d.en, ms:Object.entries(e.m).map(([s, r]) => ({slug:s, role:r})), v:e.v}; }
   const { data } = await sb.from("exercises").select("id,level,equipment,exercise_translations(lang,name,description),exercise_muscles(role,muscles(slug))").eq("id", id).maybeSingle();
   if (!data) return null;
   const tr = data.exercise_translations.find(x => x.lang === lang) || data.exercise_translations.find(x => x.lang === "en") || data.exercise_translations[0] || {};
@@ -223,19 +278,19 @@ async function showMuscle(slug) {
   const m = muscles.find(x => x.slug === slug); if (!m) return;
   $("#mt").textContent = mn(m);
   document.querySelectorAll(".z").forEach(z => z.classList.toggle("sel", z.dataset.z === m.zone));
-  const rows = await listEx(slug);
+  const rows = (await listEx(slug)).concat(localRows(slug)).filter(r => !eqSel.size || (r.eq || []).some(x => eqSel.has(x)));
   $("#mlist").innerHTML = rows.length ? rows.map(r =>
     `<a class="row" href="#/exo/${esc(r.id)}"><span class="rn">${esc(r.name)}<small>${t(r.role === "primary" ? "prim" : "sec")}</small></span>` +
-    `<span class="tags"><i class="tag lv">${t(r.level)}</i>${eqs(r.eq).map(x => `<i class="tag">${x}</i>`).join("")}</span>` +
+    `<span class="tags"><i class="tag lv">${t(r.level)}</i>${r.mine ? `<i class="tag c">${t("mine")}</i>` : ""}${eqs(r.eq).map(x => `<i class="tag">${x}</i>`).join("")}</span>` +
     `<span class="mut">${r.n} ${t("vids")}</span></a>`).join("") : `<p class="mut">${t("none")}</p>`;
 }
 async function showExo(id) {
-  if (!/^\d+$/.test(id)) return;
+  if (!/^u?\d+$/.test(id)) return;
   const e = await getExo(id);
   if (!e) { $("#et").textContent = "404"; return; }
   cur = e;
   $("#et").textContent = e.name;
-  $("#emeta").innerHTML = `<i class="tag lv">${t(e.level)}</i>` + eqs(e.eq).map(x => `<i class="tag">${x}</i>`).join("");
+  $("#emeta").innerHTML = `<i class="tag lv">${t(e.level)}</i>` + (e.mine ? `<i class="tag c">${t("mine")}</i>` : "") + eqs(e.eq).map(x => `<i class="tag">${x}</i>`).join("");
   $("#ed").textContent = e.desc;
   $("#chips").innerHTML = e.ms.map(x => { const m = muscles.find(y => y.slug === x.slug); return m ? `<a class="chip ${x.role}" href="#/muscle/${esc(m.slug)}" title="${t(x.role === "primary" ? "prim" : "sec")}">${esc(mn(m))}</a>` : ""; }).join("");
   loadVideos();
@@ -246,19 +301,24 @@ function vcard(v) {
   const tags = (v.is_reference ? `<i class="tag c">★ ${t("ref")}</i>` : "") + (v.coach_validated ? `<i class="tag c">✓ ${t("coach")}</i>` : "") + (v.status !== "published" ? `<i class="tag w">${t("pend")}</i>` : "");
   return `<div class="vid"><button class="th" data-id="${id}" style="background-image:url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)" aria-label="${t("video")}"><span>▶</span></button>` +
     `<div class="vm"><b>${esc(v.title || t("video"))}</b><div class="tags">${tags}</div>` +
-    `<div class="act"><button data-v="${v.id}" data-val="1" aria-label="+1">▲</button><b>${v.score}</b><button data-v="${v.id}" data-val="-1" aria-label="-1">▼</button><button class="rp" data-r="${v.id}">⚑ ${t("rep")}</button></div></div></div>`;
+    (v.loc ? "" : `<div class="act"><button data-v="${v.id}" data-val="1" aria-label="+1">▲</button><b>${v.score}</b><button data-v="${v.id}" data-val="-1" aria-label="-1">▼</button><button class="rp" data-r="${v.id}">⚑ ${t("rep")}</button></div>`) + "</div></div>";
 }
 async function loadVideos() {
   const box = $("#vids");
-  if (!sb) { box.innerHTML = `<p class="mut">${t("demo")}</p>`; return; }
+  if (!sb || String(cur.id)[0] === "u") {
+    const ids = [...(cur.v || []), ...(S.vid[cur.id] || [])];
+    box.innerHTML = ids.length ? ids.map((x, i) => vcard({id:i, external_id:x, loc:1, status:"published"})).join("") : `<p class="mut">${t("noV")}</p>`;
+    return;
+  }
   const { data, error } = await sb.from("videos").select("id,external_id,title,score,status,is_reference,coach_validated")
     .eq("exercise_id", cur.id).order("is_reference", {ascending:false}).order("coach_validated", {ascending:false}).order("score", {ascending:false});
   if (error) return toast(error.message);
   box.innerHTML = data.length ? data.map(vcard).join("") : `<p class="mut">${t("noV")}</p>`;
 }
 function route() {
-  const [, k, v] = location.hash.match(/^#\/(\w+)\/(.+)$/) || [];
+  const [, k, v] = location.hash.match(/^#\/(\w+)(?:\/(.+))?$/) || [];
   $("#home").hidden = !!k; $("#muscle").hidden = k !== "muscle"; $("#exo").hidden = k !== "exo";
+  $("#about").hidden = k !== "about"; $("#faq").hidden = k !== "faq";
   if (k === "muscle") showMuscle(v); else if (k === "exo") showExo(v);
   window.scrollTo(0, 0);
 }
@@ -296,10 +356,14 @@ $("#vids").addEventListener("click", async e => {
 });
 $("#addf").onsubmit = async e => {
   e.preventDefault();
-  if (!sb) return toast(t("demo"));
-  if (!user) return openAuth();
-  const id = ($("#vurl").value.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/) || [])[1];
+  const id = ytId($("#vurl").value);
   if (!id) return toast(t("badurl"));
+  if (!sb || String(cur.id)[0] === "u") {
+    const a = S.vid[cur.id] = S.vid[cur.id] || [];
+    if (a.includes(id)) return toast(t("dup"));
+    a.push(id); save(); $("#vurl").value = ""; toast(t("okpub")); return loadVideos();
+  }
+  if (!user) return openAuth();
   let title = null;
   try { const r = await fetch("https://www.youtube.com/oembed?format=json&url=" + encodeURIComponent("https://www.youtube.com/watch?v=" + id)); if (r.ok) title = (await r.json()).title; } catch {}
   const { data, error } = await sb.from("videos").insert({exercise_id:cur.id, user_id:user.id, source:"youtube", external_id:id, title, thumbnail_url:"https://i.ytimg.com/vi/" + id + "/hqdefault.jpg", language:lang, level:cur.level}).select("status").single();
@@ -321,9 +385,29 @@ $("#bx").onclick = () => $("#auth").close();
 $("#ab").onclick = () => user ? sb.auth.signOut() : openAuth();
 
 // ---------- Langue, niveau, démarrage ----------
-$("#lg").onchange = e => { lang = e.target.value; localStorage.lang = lang; applyI18n(); route(); };
+$("#lg").onchange = e => { lang = e.target.value; localStorage.lang = lang; applyI18n(); renderEq(); route(); };
 $("#lv").onchange = e => { level = e.target.value; localStorage.level = level; route(); };
 addEventListener("hashchange", route);
+
+function renderEq() {
+  const mk = (box, set, cb) => {
+    box.innerHTML = Object.keys(EQ).map(k => `<button type="button" data-k="${k}" aria-pressed="${set.has(k)}">${EQ[k][lang === "fr" ? 0 : 1]}</button>`).join("");
+    box.onclick = e => { const b = e.target.closest("button"); if (!b) return; const k = b.dataset.k; set.has(k) ? set.delete(k) : set.add(k); b.setAttribute("aria-pressed", set.has(k)); if (cb) cb(); };
+  };
+  mk($("#eqf"), eqSel, () => showMuscle(curSlug()));
+  mk($("#xeq"), xSel);
+}
+$("#addx").onsubmit = e => {
+  e.preventDefault();
+  const slug = curSlug(); if (!slug) return;
+  const ex = {id:"u" + Date.now(), level:$("#xl").value, eq:[...xSel], n:$("#xn").value.trim(), d:$("#xd").value.trim(), m:{[slug]:"primary"}};
+  S.ex.push(ex);
+  const v = ytId($("#xv").value); if (v) S.vid[ex.id] = [v];
+  save(); e.target.reset(); xSel.clear(); renderEq(); showMuscle(slug); toast(t("xok"));
+};
+const paint = () => $("#th").textContent = theme === "dark" ? "☀" : "☾";
+$("#th").onclick = () => { theme = theme === "dark" ? "light" : "dark"; localStorage.theme = theme; document.documentElement.dataset.theme = theme; paint(); };
+paint();
 
 (async () => {
   $("#lg").value = lang; $("#lv").value = level;
@@ -333,7 +417,7 @@ addEventListener("hashchange", route);
     sb.auth.onAuthStateChange((_, s) => { user = s ? s.user : null; applyI18n(); });
   }
   document.querySelectorAll(".z").forEach(z => { z.tabIndex = 0; z.setAttribute("role", "button"); });
-  applyI18n(); route();
+  applyI18n(); renderEq(); route();
 })();
 </script>
 </body>
