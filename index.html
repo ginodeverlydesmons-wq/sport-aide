@@ -88,14 +88,14 @@ footer{max-width:1020px;margin:2rem auto 1rem;padding:0 1rem;color:var(--mut);fo
 #toast{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:.6rem 1rem;border-radius:6px;max-width:90vw;z-index:20}
 dialog{background:var(--card);color:var(--ink);border:1px solid var(--ink);border-radius:10px}
 dialog::backdrop{background:#12151Caa}
-#af{display:grid;gap:.6rem;min-width:min(300px,76vw)}
+#af,#rf{display:grid;gap:.6rem;min-width:min(310px,78vw)}
 .btns{display:flex;gap:.5rem}
 @media(max-width:560px){.row{grid-template-columns:1fr auto}.tags{grid-column:1/-1}}
 .fbar{display:flex;gap:.4rem;flex-wrap:wrap;margin:0 0 1rem}
 .fbar button{border-radius:99px;padding:.2rem .8rem;font-size:.9rem}
 .fbar button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 #addx{margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line);display:grid;gap:.6rem;max-width:560px}
-#addx textarea{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:.5rem .75rem;min-height:4.5rem}
+#addx textarea,#rd{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:.5rem .75rem;min-height:4.5rem}
 #addx p{margin:0}
 .page{max-width:62ch}
 .page p{margin:0 0 1rem}
@@ -103,6 +103,24 @@ details{border-bottom:1px solid var(--line);padding:.8rem 0}
 summary{cursor:pointer;font-weight:700}
 details p{margin:.6rem 0 0;color:var(--mut)}
 footer nav{display:flex;gap:1rem;margin-top:.6rem}
+.tools{display:flex;gap:1.3rem;flex-wrap:wrap;padding:.6rem 1rem;border-bottom:1px solid var(--line)}
+.tools a{text-decoration:none;color:var(--mut)}
+.tools a[aria-current]{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:6px}
+.fgrid{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));max-width:640px;align-items:end;margin-bottom:1rem}
+.fgrid label{display:grid;gap:.2rem}
+.macros{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:1.2rem 0;max-width:640px}
+.macros div{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:.8rem}
+.macros b{display:block;font:700 1.9rem/1.1 "Bricolage Grotesque",sans-serif}
+.macros span{color:var(--mut);font-size:.9rem}
+#tm{border:1px solid var(--line);background:var(--card);border-radius:14px;text-align:center;padding:1.5rem;margin:1rem 0;max-width:640px}
+#tm[data-k=work]{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+#tm[data-k=rest]{background:var(--zone)}
+#tp{font-weight:700;font-size:1.2rem}
+#tt{font:700 clamp(4rem,18vw,8rem)/1 "Bricolage Grotesque",sans-serif}
+#lc svg{width:100%;max-width:620px;height:auto}
+#lt{width:100%;max-width:640px;border-collapse:collapse}
+#lt td{border-bottom:1px solid var(--line);padding:.5rem .3rem}
+#lt button{padding:.1rem .6rem}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -115,6 +133,7 @@ footer nav{display:flex;gap:1rem;margin-top:.6rem}
   <button id="th" aria-label="Thème"></button>
   <button id="ab"></button>
 </header>
+<nav class="tools"><a href="#/" data-i="nav_ex"></a><a href="#/timer" data-i="timerl"></a><a href="#/calc" data-i="calcl"></a><a href="#/log" data-i="logl"></a></nav>
 
 <main>
   <section id="home" class="hero">
@@ -178,12 +197,57 @@ footer nav{display:flex;gap:1rem;margin-top:.6rem}
     <div id="vids" class="grid"></div>
     <form id="addf"><input id="vurl" data-p="urlph" required><button class="pri" data-i="send"></button></form>
   </section>
+  <section id="calc" class="page" hidden><a class="bk" href="#/" data-i="home"></a><h2 data-i="calcl"></h2>
+    <form id="cf" class="fgrid">
+      <label><span data-i="sex"></span><select id="cs"><option value="m"></option><option value="f"></option></select></label>
+      <label><span data-i="age"></span><input id="ca" type="number" min="15" max="90" required></label>
+      <label><span data-i="height"></span><input id="ch" type="number" min="120" max="230" required></label>
+      <label><span data-i="weight"></span><input id="cw" type="number" min="35" max="250" step="0.1" required></label>
+      <label><span data-i="act"></span><select id="cac"><option value="1.2"></option><option value="1.375"></option><option value="1.55"></option><option value="1.725"></option><option value="1.9"></option></select></label>
+      <label><span data-i="goal"></span><select id="cg"><option value="bulk"></option><option value="cut"></option><option value="maint"></option></select></label>
+      <button class="pri" data-i="calcgo"></button>
+    </form>
+    <div id="cres" aria-live="polite"></div>
+    <p class="mut" data-i="calcnote"></p>
+  </section>
+  <section id="timer" class="page" hidden><a class="bk" href="#/" data-i="home"></a><h2 data-i="timerl"></h2>
+    <div id="tpre" class="fbar"><button type="button" data-w="20" data-r="10" data-n="8">Tabata</button><button type="button" data-w="40" data-r="20" data-n="10">HIIT</button></div>
+    <div class="fgrid">
+      <label><span data-i="twork"></span><input id="tw" type="number" min="5" max="600" value="20"></label>
+      <label><span data-i="trest"></span><input id="tr" type="number" min="0" max="600" value="10"></label>
+      <label><span data-i="trounds"></span><input id="tn" type="number" min="1" max="50" value="8"></label>
+    </div>
+    <div id="tm" data-k="prep" role="timer"><div id="tp"></div><div id="tt">5</div></div>
+    <div class="btns"><button id="tgo" class="pri"></button><button id="trs" data-i="treset"></button></div>
+  </section>
+  <section id="log" class="page" hidden><a class="bk" href="#/" data-i="home"></a><h2 data-i="logl"></h2>
+    <form id="lf" class="fgrid">
+      <label><span data-i="ldate"></span><input id="ld" type="date" required></label>
+      <label><span data-i="lex"></span><input id="le" list="ln" required maxlength="80"><datalist id="ln"></datalist></label>
+      <label><span data-i="lsets"></span><input id="lsr" type="number" min="1" max="50" value="3" required></label>
+      <label><span data-i="lreps"></span><input id="lr" type="number" min="1" max="500" value="10" required></label>
+      <label><span data-i="lkg"></span><input id="lw" type="number" min="0" max="1000" step="0.5" value="0"></label>
+      <button class="pri" data-i="ladd"></button>
+    </form>
+    <p class="mut" data-i="lnote"></p>
+    <h3 data-i="lprog"></h3><select id="ls"></select><div id="lc"></div>
+    <h3 data-i="lhist"></h3><table id="lt"></table>
+  </section>
   <section id="about" class="page" hidden><a class="bk" href="#/" data-i="home"></a><h2 data-i="aboutl"></h2><div id="aboutc"></div></section>
   <section id="faq" class="page" hidden><a class="bk" href="#/" data-i="home"></a><h2>FAQ</h2><div id="faqc"></div></section>
 </main>
 
 <footer><p data-i="warn"></p><nav><a href="#/about" data-i="aboutl"></a><a href="#/faq">FAQ</a></nav></footer>
 <div id="toast" hidden></div>
+
+<dialog id="rdlg">
+  <form id="rf">
+    <h3 data-i="repT"></h3>
+    <select id="rr"></select>
+    <textarea id="rd" maxlength="300" data-p="repd"></textarea>
+    <div class="btns"><button class="pri" data-i="repSend"></button><button type="button" id="rx" aria-label="Fermer">×</button></div>
+  </form>
+</dialog>
 
 <dialog id="auth">
   <form id="af">
@@ -206,12 +270,26 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => "&#" + c.charCodeAt(0)
 const norm = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 
 const T = {
-fr:{h1:"Choisis un muscle, trouve l’exercice.",sub:"Des vidéos d’exercices partagées par la communauté et classées par vote.",ph:"Biceps, pectoraux, mollets…",front:"Face",back:"Dos",all:"Tous niveaux",beginner:"Débutant",intermediate:"Intermédiaire",advanced:"Avancé",login:"Connexion",logout:"Déconnexion",signin:"Se connecter",signup:"Créer un compte",pw:"Mot de passe",hi:"Connecté.",confirm:"Compte créé. Confirme ton email, puis connecte-toi.",home:"← Accueil",prim:"Muscle principal",sec:"Muscle secondaire",vids:"vidéos",none:"Aucun exercice pour ce niveau.",noV:"Aucune vidéo pour l’instant. Ajoute la première ci-dessous.",vid:"Vidéos de la communauté",urlph:"Colle un lien YouTube",send:"Ajouter la vidéo",ref:"Référence",coach:"Validée par un coach",pend:"En attente de validation",rep:"Signaler",reported:"Merci, signalement envoyé.",repdup:"Tu as déjà signalé cette vidéo.",badurl:"Lien YouTube non reconnu.",dup:"Cette vidéo est déjà ajoutée.",okpub:"Vidéo publiée.",okpend:"Vidéo envoyée. Elle sera visible après validation.",demo:"Mode démo : ajoute l’URL et la clé Supabase dans index.html pour activer les comptes et les vidéos.",warn:"Les vidéos sont publiées par la communauté et ne remplacent pas l’avis d’un coach ou d’un professionnel de santé. Commence léger et arrête-toi en cas de douleur.",video:"Vidéo",mine:"Ajouté par toi",addx:"Ajouter un exercice pour ce muscle",xnph:"Nom de l’exercice (ex. pompes lestées sur chaise romaine)",xeql:"Matériel utilisé",xdph:"Comment le faire (optionnel)",xvph:"Lien YouTube (optionnel)",xsend:"Ajouter l’exercice",xnote:"Pour l’instant, ton exercice est enregistré seulement sur cet appareil.",xok:"Exercice ajouté.",aboutl:"À propos",
+fr:{h1:"Choisis un muscle, trouve l’exercice.",sub:"Des vidéos d’exercices partagées par la communauté et classées par vote.",ph:"Biceps, pectoraux, mollets…",front:"Face",back:"Dos",all:"Tous niveaux",beginner:"Débutant",intermediate:"Intermédiaire",advanced:"Avancé",login:"Connexion",logout:"Déconnexion",signin:"Se connecter",signup:"Créer un compte",pw:"Mot de passe",hi:"Connecté.",confirm:"Compte créé. Confirme ton email, puis connecte-toi.",home:"← Accueil",prim:"Muscle principal",sec:"Muscle secondaire",vids:"vidéos",none:"Aucun exercice pour ce niveau.",noV:"Aucune vidéo pour l’instant. Ajoute la première ci-dessous.",vid:"Vidéos de la communauté",urlph:"Colle un lien YouTube",send:"Ajouter la vidéo",ref:"Référence",coach:"Validée par un coach",pend:"En attente de validation",rep:"Signaler",reported:"Merci, signalement envoyé.",repdup:"Tu as déjà signalé cette vidéo.",badurl:"Lien YouTube non reconnu.",dup:"Cette vidéo est déjà ajoutée.",okpub:"Vidéo publiée.",okpend:"Vidéo envoyée. Elle sera visible après validation.",demo:"Mode démo : ajoute l’URL et la clé Supabase dans index.html pour activer les comptes et les vidéos.",warn:"Les vidéos sont publiées par la communauté et ne remplacent pas l’avis d’un coach ou d’un professionnel de santé. Commence léger et arrête-toi en cas de douleur.",video:"Vidéo",mine:"Ajouté par toi",addx:"Ajouter un exercice pour ce muscle",xnph:"Nom de l’exercice (ex. pompes lestées sur chaise romaine)",xeql:"Matériel utilisé",xdph:"Comment le faire (optionnel)",xvph:"Lien YouTube (optionnel)",xsend:"Ajouter l’exercice",xnote:"Pour l’instant, ton exercice est enregistré seulement sur cet appareil.",xok:"Exercice ajouté.",aboutl:"À propos",nav_ex:"Exercices",timerl:"Minuteur HIIT",calcl:"Calories et macros",logl:"Carnet de bord",
+rs_dangerous:"Exercice dangereux ou mal exécuté",rs_wrong_exercise:"Ce n’est pas le bon exercice",rs_wrong_category:"Mauvaise catégorie (muscle ou matériel)",rs_spam:"Spam ou publicité",rs_inappropriate:"Contenu inapproprié",rs_copyright:"Droit d’auteur",rs_broken_link:"Vidéo indisponible",rs_other:"Autre",
+repT:"Signaler cette vidéo",repd:"Précise si besoin (optionnel)",repSend:"Envoyer le signalement",reportedL:"Signalement enregistré sur cet appareil : la vidéo est masquée ici. Il sera transmis à l’équipe quand le site aura sa base de données.",
+sex:"Sexe",male:"Homme",female:"Femme",age:"Âge",height:"Taille (cm)",weight:"Poids (kg)",act:"Activité",act1:"Sédentaire (peu ou pas d’exercice)",act2:"Léger (1 à 3 séances par semaine)",act3:"Modéré (3 à 5 séances)",act4:"Intense (6 à 7 séances)",act5:"Très intense (travail physique et sport)",goal:"Objectif",bulk:"Prise de masse",cut:"Perte de gras",maint:"Maintien",calcgo:"Calculer",prot:"Protéines",carb:"Glucides",fat:"Lipides",
+minor:"Avant 18 ans, un régime pour perdre du gras n’est pas conseillé. Parles-en à un médecin ou à un diététicien.",
+calcnote:"Estimation avec la formule de Mifflin-St Jeor, à ajuster selon ton évolution sur 2 à 3 semaines. Ce n’est pas un avis médical : en cas de maladie, de grossesse ou de doute, demande conseil à un professionnel de santé.",
+twork:"Effort (s)",trest:"Repos (s)",trounds:"Tours",tstart:"Démarrer",tpause:"Pause",treset:"Réinitialiser",ph_prep:"Prépare-toi",ph_work:"Effort",ph_rest:"Repos",ph_done:"Terminé",
+ldate:"Date",lex:"Exercice",lsets:"Séries",lreps:"Répétitions",lkg:"Charge (kg, 0 = poids du corps)",ladd:"Ajouter",lnote:"Tes séances sont enregistrées seulement sur cet appareil.",lprog:"Progression",lhist:"Historique",lempty:"Aucune séance pour l’instant.",lneed:"Ajoute au moins 2 séances du même exercice, à des dates différentes, pour voir la courbe.",lok:"Séance ajoutée.",del:"Supprimer",
 about:"<p>SportAide aide à trouver le bon exercice pour chaque muscle : tu choisis un muscle sur la silhouette ou dans la recherche, puis tu filtres par niveau et par matériel (poids du corps, barre, haltères, lest…).</p><p>Chacun peut proposer ses propres exercices et ses vidéos. Les vidéos viennent de YouTube et sont affichées avec le lecteur officiel : elles restent la propriété de leurs auteurs.</p><p>C’est un projet indépendant, en cours de construction. Le vote, le signalement et la validation par des coachs sont prévus pour garder un contenu de qualité.</p>",
-faq:[["C’est quoi SportAide ?","Un site pour trouver des exercices muscle par muscle, avec des vidéos partagées par la communauté."],["Est-ce gratuit ?","Oui, le site est gratuit pour l’instant."],["Comment trouver un exercice ?","Clique sur un muscle de la silhouette (boutons Face et Dos) ou tape son nom, puis filtre par niveau et par matériel."],["Puis-je ajouter mon propre exercice ?","Oui, en bas de la page d’un muscle, avec le matériel utilisé (barre, poids du corps, lest…). Pour l’instant, il reste enregistré sur ton appareil : le partage avec tout le monde demande une base de données, prévue plus tard."],["D’où viennent les vidéos ?","De YouTube, intégrées avec le lecteur officiel. Elles restent la propriété de leurs auteurs."],["Les exercices sont-ils sans risque ?","Aucun site ne remplace un coach ou un professionnel de santé. Commence avec des charges légères et arrête-toi en cas de douleur."],["Qui vérifie la qualité des vidéos ?","Les votes, les signalements et la validation par des coachs sont prévus, mais ne sont pas encore actifs dans cette version."]]},
-en:{h1:"Pick a muscle, find the exercise.",sub:"Exercise videos shared by the community and ranked by votes.",ph:"Biceps, chest, calves…",front:"Front",back:"Back",all:"All levels",beginner:"Beginner",intermediate:"Intermediate",advanced:"Advanced",login:"Log in",logout:"Log out",signin:"Log in",signup:"Create account",pw:"Password",hi:"Logged in.",confirm:"Account created. Confirm your email, then log in.",home:"← Home",prim:"Primary muscle",sec:"Secondary muscle",vids:"videos",none:"No exercise for this level.",noV:"No video yet. Add the first one below.",vid:"Community videos",urlph:"Paste a YouTube link",send:"Add video",ref:"Reference",coach:"Coach-validated",pend:"Awaiting review",rep:"Report",reported:"Thanks, report sent.",repdup:"You already reported this video.",badurl:"YouTube link not recognised.",dup:"This video is already added.",okpub:"Video published.",okpend:"Video sent. It will show up after review.",demo:"Demo mode: add the Supabase URL and key in index.html to enable accounts and videos.",warn:"Videos are posted by the community and do not replace advice from a coach or a health professional. Start light and stop if you feel pain.",video:"Video",mine:"Added by you",addx:"Add an exercise for this muscle",xnph:"Exercise name (e.g. weighted push-ups on a roman chair)",xeql:"Equipment used",xdph:"How to do it (optional)",xvph:"YouTube link (optional)",xsend:"Add exercise",xnote:"For now, your exercise is saved on this device only.",xok:"Exercise added.",aboutl:"About",
+faq:[["C’est quoi SportAide ?","Un site pour trouver des exercices muscle par muscle, avec des vidéos partagées par la communauté."],["Est-ce gratuit ?","Oui, le site est gratuit pour l’instant."],["Comment trouver un exercice ?","Clique sur un muscle de la silhouette (boutons Face et Dos) ou tape son nom, puis filtre par niveau et par matériel."],["Puis-je ajouter mon propre exercice ?","Oui, en bas de la page d’un muscle, avec le matériel utilisé (barre, poids du corps, lest…). Pour l’instant, il reste enregistré sur ton appareil : le partage avec tout le monde demande une base de données, prévue plus tard."],["D’où viennent les vidéos ?","De YouTube, intégrées avec le lecteur officiel. Elles restent la propriété de leurs auteurs."],["Les exercices sont-ils sans risque ?","Aucun site ne remplace un coach ou un professionnel de santé. Commence avec des charges légères et arrête-toi en cas de douleur."],["Qui vérifie la qualité des vidéos ?","Les votes, les signalements et la validation par des coachs sont prévus, mais ne sont pas encore actifs dans cette version."],["Combien de temps récupérer entre deux séances ?","Souvent 48 à 72 heures avant de retravailler fort le même muscle. Tu peux t’entraîner tous les jours en alternant les groupes musculaires."],["Le sommeil compte-t-il vraiment ?","Oui. Dormir régulièrement 7 à 9 heures aide la récupération et la progression."],["Combien de protéines faut-il ?","Pour les personnes qui s’entraînent, les repères vont souvent de 1,6 à 2,2 g par kilo de poids de corps et par jour. En cas de problème de santé, demande l’avis d’un médecin."],["Quelles erreurs éviter quand on débute ?","Charger trop lourd au détriment de la technique, sauter l’échauffement, progresser trop vite, négliger le sommeil et ignorer une douleur qui persiste."],["Les courbatures sont-elles obligatoires ?","Non, ce n’est pas un signe de bonne séance. Une douleur vive ou à l’articulation est un signal pour arrêter."],["Le calculateur de calories est-il fiable ?","C’est une estimation. Pèse-toi sur 2 à 3 semaines et ajuste de 100 à 200 kcal selon l’évolution."]]},
+en:{h1:"Pick a muscle, find the exercise.",sub:"Exercise videos shared by the community and ranked by votes.",ph:"Biceps, chest, calves…",front:"Front",back:"Back",all:"All levels",beginner:"Beginner",intermediate:"Intermediate",advanced:"Advanced",login:"Log in",logout:"Log out",signin:"Log in",signup:"Create account",pw:"Password",hi:"Logged in.",confirm:"Account created. Confirm your email, then log in.",home:"← Home",prim:"Primary muscle",sec:"Secondary muscle",vids:"videos",none:"No exercise for this level.",noV:"No video yet. Add the first one below.",vid:"Community videos",urlph:"Paste a YouTube link",send:"Add video",ref:"Reference",coach:"Coach-validated",pend:"Awaiting review",rep:"Report",reported:"Thanks, report sent.",repdup:"You already reported this video.",badurl:"YouTube link not recognised.",dup:"This video is already added.",okpub:"Video published.",okpend:"Video sent. It will show up after review.",demo:"Demo mode: add the Supabase URL and key in index.html to enable accounts and videos.",warn:"Videos are posted by the community and do not replace advice from a coach or a health professional. Start light and stop if you feel pain.",video:"Video",mine:"Added by you",addx:"Add an exercise for this muscle",xnph:"Exercise name (e.g. weighted push-ups on a roman chair)",xeql:"Equipment used",xdph:"How to do it (optional)",xvph:"YouTube link (optional)",xsend:"Add exercise",xnote:"For now, your exercise is saved on this device only.",xok:"Exercise added.",aboutl:"About",nav_ex:"Exercises",timerl:"HIIT timer",calcl:"Calories & macros",logl:"Training log",
+rs_dangerous:"Dangerous or poorly performed exercise",rs_wrong_exercise:"Not the right exercise",rs_wrong_category:"Wrong category (muscle or equipment)",rs_spam:"Spam or ads",rs_inappropriate:"Inappropriate content",rs_copyright:"Copyright",rs_broken_link:"Video unavailable",rs_other:"Other",
+repT:"Report this video",repd:"Add details if needed (optional)",repSend:"Send report",reportedL:"Report saved on this device: the video is hidden here. It will reach the team once the site has its database.",
+sex:"Sex",male:"Male",female:"Female",age:"Age",height:"Height (cm)",weight:"Weight (kg)",act:"Activity",act1:"Sedentary (little or no exercise)",act2:"Light (1 to 3 sessions a week)",act3:"Moderate (3 to 5 sessions)",act4:"Intense (6 to 7 sessions)",act5:"Very intense (physical job and sport)",goal:"Goal",bulk:"Muscle gain",cut:"Fat loss",maint:"Maintenance",calcgo:"Calculate",prot:"Protein",carb:"Carbs",fat:"Fat",
+minor:"Under 18, a fat-loss diet is not recommended. Talk to a doctor or a dietitian.",
+calcnote:"Estimate using the Mifflin-St Jeor formula, to adjust based on your progress over 2 to 3 weeks. This is not medical advice: with a health condition, pregnancy or any doubt, ask a health professional.",
+twork:"Work (s)",trest:"Rest (s)",trounds:"Rounds",tstart:"Start",tpause:"Pause",treset:"Reset",ph_prep:"Get ready",ph_work:"Work",ph_rest:"Rest",ph_done:"Done",
+ldate:"Date",lex:"Exercise",lsets:"Sets",lreps:"Reps",lkg:"Weight (kg, 0 = bodyweight)",ladd:"Add",lnote:"Your sessions are saved on this device only.",lprog:"Progress",lhist:"History",lempty:"No session yet.",lneed:"Add at least 2 sessions of the same exercise on different dates to see the curve.",lok:"Session added.",del:"Delete",
 about:"<p>SportAide helps you find the right exercise for each muscle: pick a muscle on the body map or in the search, then filter by level and equipment (bodyweight, barbell, dumbbells, added weight…).</p><p>Anyone can suggest their own exercises and videos. Videos come from YouTube and are shown with the official player: they remain the property of their authors.</p><p>This is an independent project under construction. Voting, reporting and coach validation are planned to keep content quality high.</p>",
-faq:[["What is SportAide?","A site to find exercises muscle by muscle, with videos shared by the community."],["Is it free?","Yes, the site is free for now."],["How do I find an exercise?","Click a muscle on the body map (Front and Back buttons) or type its name, then filter by level and equipment."],["Can I add my own exercise?","Yes, at the bottom of a muscle page, with the equipment used (barbell, bodyweight, added weight…). For now it stays saved on your device: sharing with everyone needs a database, planned for later."],["Where do the videos come from?","From YouTube, embedded with the official player. They remain the property of their authors."],["Are the exercises risk-free?","No site replaces a coach or a health professional. Start with light weights and stop if you feel pain."],["Who checks video quality?","Votes, reports and coach validation are planned but not active in this version yet."]]}
+faq:[["What is SportAide?","A site to find exercises muscle by muscle, with videos shared by the community."],["Is it free?","Yes, the site is free for now."],["How do I find an exercise?","Click a muscle on the body map (Front and Back buttons) or type its name, then filter by level and equipment."],["Can I add my own exercise?","Yes, at the bottom of a muscle page, with the equipment used (barbell, bodyweight, added weight…). For now it stays saved on your device: sharing with everyone needs a database, planned for later."],["Where do the videos come from?","From YouTube, embedded with the official player. They remain the property of their authors."],["Are the exercises risk-free?","No site replaces a coach or a health professional. Start with light weights and stop if you feel pain."],["Who checks video quality?","Votes, reports and coach validation are planned but not active in this version yet."],["How long should I recover between sessions?","Often 48 to 72 hours before training the same muscle hard again. You can train every day by alternating muscle groups."],["Does sleep really matter?","Yes. Regularly sleeping 7 to 9 hours helps recovery and progress."],["How much protein do I need?","For people who train, common guidelines are 1.6 to 2.2 g per kilo of body weight per day. With a health condition, ask a doctor."],["What mistakes should beginners avoid?","Lifting too heavy at the expense of technique, skipping the warm-up, progressing too fast, neglecting sleep and ignoring pain that persists."],["Is muscle soreness required?","No, it is not a sign of a good session. Sharp or joint pain is a signal to stop."],["Is the calorie calculator reliable?","It is an estimate. Weigh yourself over 2 to 3 weeks and adjust by 100 to 200 kcal based on the trend."]]}
 };
 const EQ = {bodyweight:["Poids du corps","Bodyweight"],barbell:["Barre","Barbell"],dumbbell:["Haltères","Dumbbells"],plate:["Poids / lest","Weights / plates"],machine:["Machine","Machine"],cable:["Poulie","Cable"],band:["Élastique","Band"],bench:["Banc","Bench"],chair:["Chaise romaine","Roman chair"]};
 
@@ -229,7 +307,7 @@ if (!T[lang]) lang = "en";
 let level = localStorage.level || "", muscles = [], user = null, cur = null, theme = document.documentElement.dataset.theme;
 const eqSel = new Set(), xSel = new Set();
 let S = (() => { try { return JSON.parse(localStorage.sa) || {}; } catch { return {}; } })();
-S.ex = S.ex || []; S.vid = S.vid || {};
+S.ex = S.ex || []; S.vid = S.vid || {}; S.hid = S.hid || []; S.log = S.log || [];
 const save = () => localStorage.sa = JSON.stringify(S);
 const ytId = s => (s.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/) || [])[1];
 const curSlug = () => (location.hash.match(/muscle\/(.+)$/) || [])[1];
@@ -248,6 +326,10 @@ function applyI18n() {
   $("#aboutc").innerHTML = t("about");
   $("#faqc").innerHTML = t("faq").map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("");
   ["beginner", "intermediate", "advanced"].forEach((v, i) => $("#xl").options[i].text = t(v));
+  const fill = (q, ks) => ks.forEach((k, i) => $(q).options[i].text = t(k));
+  fill("#cs", ["male", "female"]); fill("#cac", ["act1", "act2", "act3", "act4", "act5"]); fill("#cg", ["bulk", "cut", "maint"]);
+  $("#rr").innerHTML = ["dangerous", "wrong_exercise", "wrong_category", "spam", "inappropriate", "copyright", "broken_link", "other"].map(k => `<option value="${k}">${t("rs_" + k)}</option>`).join("");
+  $("#tgo").textContent = t(TM.h ? "tpause" : "tstart");
   $("#demo").textContent = t("demo"); $("#demo").hidden = true;
   document.querySelectorAll(".z").forEach(z => { const m = muscles.find(x => x.zone === z.dataset.z); if (m) z.setAttribute("aria-label", mn(m)); });
 }
@@ -301,12 +383,12 @@ function vcard(v) {
   const tags = (v.is_reference ? `<i class="tag c">★ ${t("ref")}</i>` : "") + (v.coach_validated ? `<i class="tag c">✓ ${t("coach")}</i>` : "") + (v.status !== "published" ? `<i class="tag w">${t("pend")}</i>` : "");
   return `<div class="vid"><button class="th" data-id="${id}" style="background-image:url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)" aria-label="${t("video")}"><span>▶</span></button>` +
     `<div class="vm"><b>${esc(v.title || t("video"))}</b><div class="tags">${tags}</div>` +
-    (v.loc ? "" : `<div class="act"><button data-v="${v.id}" data-val="1" aria-label="+1">▲</button><b>${v.score}</b><button data-v="${v.id}" data-val="-1" aria-label="-1">▼</button><button class="rp" data-r="${v.id}">⚑ ${t("rep")}</button></div>`) + "</div></div>";
+    (v.loc ? `<div class="act"><button class="rp" data-rl="${id}">⚑ ${t("rep")}</button></div>` : `<div class="act"><button data-v="${v.id}" data-val="1" aria-label="+1">▲</button><b>${v.score}</b><button data-v="${v.id}" data-val="-1" aria-label="-1">▼</button><button class="rp" data-r="${v.id}">⚑ ${t("rep")}</button></div>`) + "</div></div>";
 }
 async function loadVideos() {
   const box = $("#vids");
   if (!sb || String(cur.id)[0] === "u") {
-    const ids = [...(cur.v || []), ...(S.vid[cur.id] || [])];
+    const ids = [...(cur.v || []), ...(S.vid[cur.id] || [])].filter(x => !S.hid.includes(x));
     box.innerHTML = ids.length ? ids.map((x, i) => vcard({id:i, external_id:x, loc:1, status:"published"})).join("") : `<p class="mut">${t("noV")}</p>`;
     return;
   }
@@ -318,8 +400,12 @@ async function loadVideos() {
 function route() {
   const [, k, v] = location.hash.match(/^#\/(\w+)(?:\/(.+))?$/) || [];
   $("#home").hidden = !!k; $("#muscle").hidden = k !== "muscle"; $("#exo").hidden = k !== "exo";
-  $("#about").hidden = k !== "about"; $("#faq").hidden = k !== "faq";
+  ["about", "faq", "calc", "timer", "log"].forEach(x => $("#" + x).hidden = k !== x);
+  const kk = ["muscle", "exo"].includes(k) ? "" : (k || "");
+  document.querySelectorAll(".tools a").forEach(a => a.toggleAttribute("aria-current", a.getAttribute("href") === "#/" + kk));
   if (k === "muscle") showMuscle(v); else if (k === "exo") showExo(v);
+  else if (k === "timer") { if (!TM.h) tmReset(); }
+  else if (k === "log") initLog();
   window.scrollTo(0, 0);
 }
 
@@ -344,14 +430,14 @@ $("#vids").addEventListener("click", async e => {
   const th = e.target.closest(".th");
   if (th) { th.outerHTML = `<iframe class="th" src="https://www.youtube-nocookie.com/embed/${th.dataset.id}?autoplay=1" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`; return; }
   const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.rl) return openReport({loc:1, id:b.dataset.rl});
   if (!sb) return toast(t("demo"));
   if (!user) return openAuth();
   if (b.dataset.v) {
     const { error } = await sb.from("votes").upsert({user_id:user.id, video_id:+b.dataset.v, value:+b.dataset.val}, {onConflict:"user_id,video_id"});
     if (error) toast(error.message); else loadVideos();
   } else if (b.dataset.r) {
-    const { error } = await sb.from("reports").insert({video_id:+b.dataset.r, user_id:user.id, reason:"other"});
-    toast(error ? (error.code === "23505" ? t("repdup") : error.message) : t("reported"));
+    openReport({id:+b.dataset.r});
   }
 });
 $("#addf").onsubmit = async e => {
@@ -408,6 +494,94 @@ $("#addx").onsubmit = e => {
 const paint = () => $("#th").textContent = theme === "dark" ? "☀" : "☾";
 $("#th").onclick = () => { theme = theme === "dark" ? "light" : "dark"; localStorage.theme = theme; document.documentElement.dataset.theme = theme; paint(); };
 paint();
+
+// ----- Signalement -----
+let RP = null;
+function openReport(o) { RP = o; $("#rdlg").showModal(); }
+$("#rx").onclick = () => $("#rdlg").close();
+$("#rf").onsubmit = async e => {
+  e.preventDefault();
+  const reason = $("#rr").value, details = $("#rd").value.trim() || null;
+  $("#rdlg").close(); $("#rd").value = "";
+  if (RP.loc) { S.hid.push(RP.id); save(); toast(t("reportedL")); return loadVideos(); }
+  const { error } = await sb.from("reports").insert({video_id:RP.id, user_id:user.id, reason, details});
+  toast(error ? (error.code === "23505" ? t("repdup") : error.message) : t("reported"));
+};
+
+// ----- Calories et macros -----
+$("#cf").onsubmit = e => {
+  e.preventDefault();
+  const man = $("#cs").value === "m", a = +$("#ca").value, h = +$("#ch").value, w = +$("#cw").value, g = $("#cg").value;
+  if (a < 18 && g === "cut") { $("#cres").innerHTML = `<p>${t("minor")}</p>`; return; }
+  const bmr = 10 * w + 6.25 * h - 5 * a + (man ? 5 : -161);
+  const kcal = Math.round(Math.max(bmr * +$("#cac").value * ({bulk:1.1, cut:.85, maint:1})[g], man ? 1500 : 1200));
+  const p = Math.round(w * (g === "cut" ? 2.2 : 1.8)), f = Math.round(kcal * .25 / 9), c = Math.max(0, Math.round((kcal - p * 4 - f * 9) / 4));
+  $("#cres").innerHTML = `<div class="macros"><div><b>${kcal}</b><span>kcal</span></div><div><b>${p} g</b><span>${t("prot")}</span></div><div><b>${c} g</b><span>${t("carb")}</span></div><div><b>${f} g</b><span>${t("fat")}</span></div></div>`;
+};
+
+// ----- Minuteur HIIT / Tabata -----
+const TM = {h:null, q:[], i:0, end:0, left:0, last:0};
+const beep = (f = 880, d = .12) => { try { const c = beep.c = beep.c || new AudioContext(), o = c.createOscillator(), g = c.createGain(); o.frequency.value = f; g.gain.value = .15; o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + d); } catch {} };
+function tmBuild() {
+  const w = +$("#tw").value || 20, r = +$("#tr").value || 0, n = +$("#tn").value || 1;
+  TM.q = [{k:"prep", d:5, n:0}];
+  for (let j = 1; j <= n; j++) { TM.q.push({k:"work", d:w, n:j}); if (r && j < n) TM.q.push({k:"rest", d:r, n:j}); }
+  TM.q.push({k:"done", d:0, n:0});
+}
+function tmShow() {
+  const p = TM.q[TM.i];
+  $("#tt").textContent = p.k === "done" ? "✓" : Math.ceil(TM.left / 1000);
+  $("#tp").textContent = t("ph_" + p.k) + (p.n ? " " + p.n + "/" + (+$("#tn").value || 1) : "");
+  $("#tm").dataset.k = p.k;
+}
+function tmStop() { clearInterval(TM.h); TM.h = null; $("#tgo").textContent = t("tstart"); }
+function tmReset() { tmStop(); tmBuild(); TM.i = 0; TM.left = TM.q[0].d * 1000; tmShow(); }
+function tmTick() {
+  TM.left = TM.end - Date.now();
+  if (TM.left <= 0) {
+    const p = TM.q[++TM.i];
+    if (p.k === "done") { tmStop(); TM.left = 0; beep(520, .6); return tmShow(); }
+    TM.left = p.d * 1000; TM.end = Date.now() + TM.left; TM.last = 0; beep(p.k === "work" ? 988 : 660, .3);
+  } else { const s = Math.ceil(TM.left / 1000); if (s <= 3 && s !== TM.last) { TM.last = s; beep(660, .08); } }
+  tmShow();
+}
+$("#tgo").onclick = () => {
+  if (TM.h) { TM.left = TM.end - Date.now(); return tmStop(); }
+  if (!TM.q.length || TM.q[TM.i].k === "done") tmReset();
+  TM.end = Date.now() + TM.left; TM.h = setInterval(tmTick, 200); $("#tgo").textContent = t("tpause"); beep(660, .1); tmShow();
+};
+$("#trs").onclick = tmReset;
+$("#tpre").onclick = e => { const b = e.target.closest("button"); if (!b) return; $("#tw").value = b.dataset.w; $("#tr").value = b.dataset.r; $("#tn").value = b.dataset.n; tmReset(); };
+["#tw", "#tr", "#tn"].forEach(q => $(q).addEventListener("input", () => { if (!TM.h) tmReset(); }));
+
+// ----- Carnet de bord (enregistré sur l’appareil) -----
+function initLog() { if (!$("#ld").value) $("#ld").value = new Date().toLocaleDateString("sv"); renderLog(); }
+function renderLog() {
+  const L = S.log, names = [...new Set(L.map(x => x.e))], sel = $("#ls"), keep = sel.value;
+  $("#ln").innerHTML = names.map(n => `<option value="${esc(n)}">`).join("");
+  sel.innerHTML = names.map(n => `<option>${esc(n)}</option>`).join(""); if (names.includes(keep)) sel.value = keep;
+  $("#lt").innerHTML = [...L].sort((a, b) => b.d.localeCompare(a.d) || b.id - a.id).map(x =>
+    `<tr><td>${esc(x.d)}</td><td>${esc(x.e)}</td><td>${x.s} × ${x.r}${x.w ? " @ " + x.w + " kg" : ""}</td><td><button data-del="${x.id}" aria-label="${t("del")}">×</button></td></tr>`).join("") || `<tr><td class="mut">${t("lempty")}</td></tr>`;
+  drawLog();
+}
+function drawLog() {
+  const n = $("#ls").value, pts = S.log.filter(x => x.e === n), byW = pts.some(x => x.w > 0), m = new Map();
+  pts.forEach(x => m.set(x.d, Math.max(m.get(x.d) || 0, byW ? x.w : x.r)));
+  const d = [...m].sort((a, b) => a[0].localeCompare(b[0]));
+  if (d.length < 2) { $("#lc").innerHTML = `<p class="mut">${t("lneed")}</p>`; return; }
+  const vs = d.map(x => x[1]), lo = Math.min(...vs), hi = Math.max(...vs);
+  const px = i => 30 + i * 540 / (d.length - 1), py = v => 150 - (hi === lo ? 60 : (v - lo) / (hi - lo) * 120);
+  $("#lc").innerHTML = `<svg viewBox="0 0 600 190" role="img" aria-label="${esc(n)}"><polyline fill="none" stroke="var(--acc)" stroke-width="3" points="${d.map((x, i) => px(i) + "," + py(x[1])).join(" ")}"/>` +
+    d.map((x, i) => `<circle cx="${px(i)}" cy="${py(x[1])}" r="4" fill="var(--acc)"><title>${esc(x[0])} : ${x[1]}</title></circle>`).join("") +
+    `<text x="30" y="16" font-size="14" fill="var(--mut)">${byW ? "kg" : "reps"} : ${lo} → ${hi}</text><text x="30" y="182" font-size="14" fill="var(--mut)">${esc(d[0][0])}</text><text x="570" y="182" font-size="14" text-anchor="end" fill="var(--mut)">${esc(d[d.length - 1][0])}</text></svg>`;
+}
+$("#lf").onsubmit = e => {
+  e.preventDefault();
+  S.log.push({id:Date.now(), d:$("#ld").value, e:$("#le").value.trim(), s:+$("#lsr").value, r:+$("#lr").value, w:+$("#lw").value || 0});
+  save(); $("#le").value = ""; renderLog(); toast(t("lok"));
+};
+$("#lt").onclick = e => { const b = e.target.closest("[data-del]"); if (!b) return; S.log = S.log.filter(x => x.id != b.dataset.del); save(); renderLog(); };
+$("#ls").onchange = drawLog;
 
 (async () => {
   $("#lg").value = lang; $("#lv").value = level;
